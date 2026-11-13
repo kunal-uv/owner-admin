@@ -4,7 +4,13 @@ const isDev = process.env.NODE_ENV !== "production";
  * The browser only ever talks to this origin: /api/* is proxied to
  * owner-admin-api (OWNER_API_URL), so the session cookie stays first-party and
  * the CSP can keep connect-src to 'self'.
+ *
+ * ! Next.js resolves rewrites at BUILD time (they're baked into the build), so
+ * ! OWNER_API_URL must be set when `next build` runs, not only at runtime.
  */
+if (!isDev && !process.env.OWNER_API_URL) {
+	throw new Error("OWNER_API_URL must be set at build time (e.g. http://owner-admin-api:4100). See README → Deploying.");
+}
 const ownerApiUrl = (process.env.OWNER_API_URL || "http://localhost:4100").replace(/\/$/, "");
 
 const csp = [
